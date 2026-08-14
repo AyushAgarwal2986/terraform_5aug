@@ -1,4 +1,4 @@
-name: Terraform Plan
+name: Terraform CI
 
 on:
   push:
@@ -6,55 +6,70 @@ on:
       - feature01
 
 permissions:
-  id-token: write
   contents: read
+  id-token: write
 
 jobs:
-  terraform-plan:
-    name: Terraform Plan
+
+  terraform-ci-pipeline:
+
     runs-on: ubuntu-latest
 
     defaults:
       run:
         working-directory: environment/dev
 
-    env:
-      ARM_USE_OIDC: true
-      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
     steps:
-      - name: Checkout Repository
+
+      # 1. Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.14.6
-
-      - name: Terraform Init
-        run: terraform init
-
-      # Setup TFLint
-      - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v4
-
-      - name: Initialize TFLint
-        run: tflint --init
-
-      - name: Run TFLint
-        run: tflint
-
-      - name: Azure Login (OIDC)
+      # 2. Azure Login
+      - name: Azure Login
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      # 3. Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # 4. Setup TFLint
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v5
+        with:
+          tflint_version: latest
+
+      # 5. Initialize TFLint
+      - name: Initialize TFLint
+        run: tflint --init
+
+      # 6. Run TFLint
+      - name: Run TFLint
+        run: tflint
+
+      # 7. Checkov Security Scan
+      - name: Run Checkov Security Scan
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: environment/dev
+          framework: terraform
+
+      # 8. Terraform Format Check
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      # 9. Terraform Init
+      - name: Terraform Init
+        run: terraform init
+
+      # 10. Terraform Validate
       - name: Terraform Validate
         run: terraform validate
 
+      # 11. Terraform Plan
       - name: Terraform Plan
-        run: terraform plan -no-color
+        run: terraform plan -out=tfplan
