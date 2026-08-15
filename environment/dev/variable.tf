@@ -28,7 +28,7 @@ variable "nsg" {
     name                = string
     location            = string
     resource_group_name = string
-    
+
   }))
 }
 
