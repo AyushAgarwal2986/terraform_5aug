@@ -25,9 +25,9 @@ module "NSG_association" {
   source = "../../child_module/azurerm_subnet_network_security_group_association"
   config = {
     for key, association in var.NSG_association : key => {
-      subnet_id = module.azurerm_subnet.subnet_ids[association.subnet_key]
+      subnet_id = module.subnets.subnet_ids[association.subnet_key]
 
-      network_security_group_id = module.network_security_group.network_security_group_ids[association.nsg_key]
+      network_security_group_id = module.NSG.network_security_group_ids[association.nsg_key]
     }
   }
   depends_on = [module.subnets, module.NSG]
