@@ -36,13 +36,13 @@ resource_group = {
                }
         }
 
-        NSG_association = {
-           sa1 = {
-    subnet_key = "subnet1"
-    nsg_key    = "nsg1"
-  }
+            NSG_association = {
+            sa1 = {
+        subnet_key = "subnet1"
+        nsg_key    = "nsg1"
+    }
 
-  sa2 = {
-    subnet_key = "subnet2"
-    nsg_key    = "nsg1"
-  }}
+    sa2 = {
+        subnet_key = "subnet2"
+        nsg_key    = "nsg1"
+    }}
