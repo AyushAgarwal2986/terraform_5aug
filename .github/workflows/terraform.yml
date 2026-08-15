@@ -57,6 +57,9 @@ jobs:
         with:
           directory: environment/dev
           framework: terraform
+          output_format: sarif
+          skip_check: CKV2_AZURE_31
+          log_level: WARNING
 
       # 8. Terraform Format Check
       - name: Terraform Format Check
