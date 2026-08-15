@@ -27,3 +27,22 @@ resource_group = {
         virtual_network_name = "vnet1"
         address_prefixes = ["10.0.2.0/24"]
         }}
+
+        nsg = {
+            nsg1 = { 
+        name = "devnsg"
+        location = "eastus"
+        resource_group_name = "rg1" 
+               }
+        }
+
+        NSG_association = {
+            association1 = {
+                subnet_id = module.subnets["subnet1"].id
+                network_security_group_id = module.NSG["nsg1"].id
+            }
+            association2 = {
+                subnet_id = module.subnets["subnet2"].id
+                network_security_group_id = module.NSG["nsg1"].id
+            }
+        }
