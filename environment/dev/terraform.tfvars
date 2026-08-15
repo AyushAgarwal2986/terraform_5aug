@@ -37,12 +37,12 @@ resource_group = {
         }
 
         NSG_association = {
-            association1 = {
-                subnet_id = module.subnets["subnet1"].id
-                network_security_group_id = module.NSG["nsg1"].id
-            }
-            association2 = {
-                subnet_id = module.subnets["subnet2"].id
-                network_security_group_id = module.NSG["nsg1"].id
-            }
-        }
+           sa1 = {
+    subnet_key = "subnet1"
+    nsg_key    = "nsg1"
+  }
+
+  sa2 = {
+    subnet_key = "subnet2"
+    nsg_key    = "nsg1"
+  }}
